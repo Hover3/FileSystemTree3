@@ -1,9 +1,9 @@
 package main
 
 import (
+	ColorPrinting "FileSystemTree3/app"
 	folder "FileSystemTree3/domain"
 	config "FileSystemTree3/infrastructure"
-	"fmt"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -19,7 +19,7 @@ func init() {
 
 func main() {
 	conf := config.New()
-	_ = conf
+	ColorPrinting.InitPrinting(conf)
 
 	// Print out environment variables
 	//fmt.Println(conf.GitHub.Username)
@@ -38,16 +38,17 @@ func main() {
 		panic(err)
 	}
 	RootFolder := folder.NewRootItem(currentDir)
-	fmt.Println(RootFolder.FolderName)
+	//fmt.Println(RootFolder.FolderName)
 	RootFolder.ScanRecurrent()
+	RootFolder.PrintRecurrent("", true)
 
-	fmt.Println((RootFolder.SubFolders))
-	fmt.Println((RootFolder.Files))
-
-	for _, el := range RootFolder.SubFolders {
-		fmt.Println(el.FolderName)
-	}
-	for _, el := range RootFolder.Files {
-		fmt.Println(el.FileName)
-	}
+	//fmt.Println((RootFolder.SubFolders))
+	//fmt.Println((RootFolder.Files))
+	//
+	//for _, el := range RootFolder.SubFolders {
+	//	fmt.Println(el.FolderName)
+	//}
+	//for _, el := range RootFolder.Files {
+	//	fmt.Println(el.FileName)
+	//}
 }

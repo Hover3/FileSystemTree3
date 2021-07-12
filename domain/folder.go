@@ -1,6 +1,10 @@
 package folder
 
-import "os"
+import (
+	ColorPrinting "FileSystemTree3/app"
+	"fmt"
+	"os"
+)
 
 type TreeFolderInfo struct {
 	Parent     *TreeFolderInfo
@@ -48,6 +52,71 @@ func (f *TreeFolderInfo) ScanRecurrent() {
 	f.Scan()
 	for _, el := range f.SubFolders {
 		el.ScanRecurrent()
+	}
+}
+
+func (f *TreeFolderInfo) PrintRecurrent(prefix string, last bool) {
+
+	f.Print(prefix, last)
+	for i := 0; i < len(f.SubFolders); i++ {
+		if i == len(f.SubFolders)-1 {
+			if f.Parent == nil {
+				f.SubFolders[i].PrintRecurrent(prefix+" ", true)
+			} else {
+				var s string
+				if last == true {
+					s = "  "
+				} else {
+					s = "\u2502" + " "
+				}
+				f.SubFolders[i].PrintRecurrent(prefix+s, true)
+			}
+		} else {
+
+			if f.Parent == nil {
+				f.SubFolders[i].PrintRecurrent(prefix+" ", false)
+			} else {
+				var s string
+				if last == true {
+					s = "  "
+				} else {
+					s = "\u2502" + " "
+				}
+				f.SubFolders[i].PrintRecurrent(prefix+s, false)
+			}
+		}
+	}
+	f.PrintFiles(prefix + "\u2502" + " ")
+}
+
+func (f *TreeFolderInfo) Print(prefix string, last bool) {
+	var s string
+	if last == true {
+		s = "\u2514"
+	} else {
+		s = "\u251C"
+	}
+	fmt.Print(prefix, s, "\u2500")
+	ColorPrinting.PrintFolderName(f.FolderName)
+	if f.CantAccess == true {
+		ColorPrinting.PrintError("\t No access!")
+	}
+	fmt.Print("\n")
+}
+
+func (f *TreeFolderInfo) PrintFiles(prefix string) {
+	for i := range f.Files {
+		var s string
+		if i == len(f.Files)-1 {
+			s = "\u2514"
+
+		} else {
+			s = "\u251C"
+
+		}
+		fmt.Print(prefix, s, "\u2500")
+		ColorPrinting.PrintFileName(f.Files[i].FileName)
+		ColorPrinting.PrintFileSize(fmt.Sprint("\t", "size:", f.Files[i].FileSize, "\n"))
 	}
 }
 
