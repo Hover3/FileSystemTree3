@@ -61,12 +61,12 @@ func (f FolderInfo) Scan() error {
 			fileInformation, err := fso.Info()
 			if err != nil {
 				tempFile.CantAccess = true
-
 			} else {
 				tempFile.FileSize = fileInformation.Size()
 			}
 			f.Files = append(f.Files, tempFile)
 		}
+		return nil
 	}
 
 }
