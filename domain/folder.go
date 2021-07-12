@@ -2,9 +2,9 @@ package folder
 
 import "os"
 
-type FolderInfo struct {
-	Parent     *FolderInfo
-	SubFolders []FolderInfo
+type TreeFolderInfo struct {
+	Parent     *TreeFolderInfo
+	SubFolders []TreeFolderInfo
 	Files      []FileInfo
 	IsScanned  bool
 	CantAccess bool
@@ -22,10 +22,10 @@ func (f FileInfo) GetFileExtension() string {
 	return ""
 }
 
-func New(absolutePath string) *FolderInfo {
-	return &FolderInfo{
+func NewRootItem(absolutePath string) *TreeFolderInfo {
+	return &TreeFolderInfo{
 		Parent:     nil,
-		SubFolders: make([]FolderInfo, 0),
+		SubFolders: make([]TreeFolderInfo, 0),
 		Files:      make([]FileInfo, 0),
 		IsScanned:  false,
 		FolderName: absolutePath,
@@ -33,10 +33,10 @@ func New(absolutePath string) *FolderInfo {
 	}
 }
 
-func new(folderName string, parent *FolderInfo) *FolderInfo {
-	return &FolderInfo{
+func newSubFolderItem(folderName string, parent *TreeFolderInfo) *TreeFolderInfo {
+	return &TreeFolderInfo{
 		Parent:     parent,
-		SubFolders: make([]FolderInfo, 0),
+		SubFolders: make([]TreeFolderInfo, 0),
 		Files:      make([]FileInfo, 0),
 		IsScanned:  false,
 		CantAccess: false,
@@ -44,7 +44,7 @@ func new(folderName string, parent *FolderInfo) *FolderInfo {
 	}
 }
 
-func (f FolderInfo) Scan() error {
+func (f *TreeFolderInfo) Scan() error {
 	FileSystemObjects, err := os.ReadDir(f.GetAbsolutePath())
 	if err != nil {
 		f.CantAccess = true
@@ -52,8 +52,8 @@ func (f FolderInfo) Scan() error {
 	}
 	for _, fso := range FileSystemObjects {
 		if fso.IsDir() {
-			tempFolder := FolderInfo{FolderName: fso.Name()}
-			f.SubFolders = append(f.SubFolders, tempFolder)
+			tempFolder := newSubFolderItem(fso.Name(), f)
+			f.SubFolders = append(f.SubFolders, *tempFolder)
 			//Adding directory
 		} else {
 			//adding file
@@ -68,10 +68,11 @@ func (f FolderInfo) Scan() error {
 		}
 
 	}
+	f.IsScanned = true
 	return nil
 }
 
-func (f FolderInfo) GetAbsolutePath() string {
+func (f *TreeFolderInfo) GetAbsolutePath() string {
 	if f.Parent == nil {
 		return f.FolderName
 	} else {
