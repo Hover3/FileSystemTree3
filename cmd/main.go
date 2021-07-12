@@ -39,8 +39,15 @@ func main() {
 	}
 	RootFolder := folder.NewRootItem(currentDir)
 	fmt.Println(RootFolder.FolderName)
-	RootFolder.Scan()
+	RootFolder.ScanRecurrent()
 
 	fmt.Println((RootFolder.SubFolders))
 	fmt.Println((RootFolder.Files))
+
+	for _, el := range RootFolder.SubFolders {
+		fmt.Println(el.FolderName)
+	}
+	for _, el := range RootFolder.Files {
+		fmt.Println(el.FileName)
+	}
 }

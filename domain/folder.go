@@ -4,8 +4,8 @@ import "os"
 
 type TreeFolderInfo struct {
 	Parent     *TreeFolderInfo
-	SubFolders []TreeFolderInfo
-	Files      []FileInfo
+	SubFolders []*TreeFolderInfo
+	Files      []*FileInfo
 	IsScanned  bool
 	CantAccess bool
 	FolderName string
@@ -25,8 +25,8 @@ func (f FileInfo) GetFileExtension() string {
 func NewRootItem(absolutePath string) *TreeFolderInfo {
 	return &TreeFolderInfo{
 		Parent:     nil,
-		SubFolders: make([]TreeFolderInfo, 0),
-		Files:      make([]FileInfo, 0),
+		SubFolders: make([]*TreeFolderInfo, 0),
+		Files:      make([]*FileInfo, 0),
 		IsScanned:  false,
 		FolderName: absolutePath,
 		CantAccess: false,
@@ -36,11 +36,18 @@ func NewRootItem(absolutePath string) *TreeFolderInfo {
 func newSubFolderItem(folderName string, parent *TreeFolderInfo) *TreeFolderInfo {
 	return &TreeFolderInfo{
 		Parent:     parent,
-		SubFolders: make([]TreeFolderInfo, 0),
-		Files:      make([]FileInfo, 0),
+		SubFolders: make([]*TreeFolderInfo, 0),
+		Files:      make([]*FileInfo, 0),
 		IsScanned:  false,
 		CantAccess: false,
 		FolderName: folderName,
+	}
+}
+
+func (f *TreeFolderInfo) ScanRecurrent() {
+	f.Scan()
+	for _, el := range f.SubFolders {
+		el.ScanRecurrent()
 	}
 }
 
@@ -53,7 +60,7 @@ func (f *TreeFolderInfo) Scan() error {
 	for _, fso := range FileSystemObjects {
 		if fso.IsDir() {
 			tempFolder := newSubFolderItem(fso.Name(), f)
-			f.SubFolders = append(f.SubFolders, *tempFolder)
+			f.SubFolders = append(f.SubFolders, tempFolder)
 			//Adding directory
 		} else {
 			//adding file
@@ -64,7 +71,7 @@ func (f *TreeFolderInfo) Scan() error {
 			} else {
 				tempFile.FileSize = fileInformation.Size()
 			}
-			f.Files = append(f.Files, tempFile)
+			f.Files = append(f.Files, &tempFile)
 		}
 
 	}
