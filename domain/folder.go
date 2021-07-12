@@ -66,9 +66,9 @@ func (f FolderInfo) Scan() error {
 			}
 			f.Files = append(f.Files, tempFile)
 		}
-		return nil
-	}
 
+	}
+	return nil
 }
 
 func (f FolderInfo) GetAbsolutePath() string {
