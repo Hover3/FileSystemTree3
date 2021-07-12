@@ -6,11 +6,6 @@ import (
 	"strings"
 )
 
-type GitHubConfig struct {
-	Username string
-	APIKey   string
-}
-
 type Config struct {
 	EnableExtensionsFilter bool
 	EnabledExtensions      []string

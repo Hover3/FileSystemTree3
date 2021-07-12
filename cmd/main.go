@@ -24,8 +24,8 @@ func main() {
 	//fmt.Println(conf.DebugMode)
 	//fmt.Println(conf.MaxUsers)
 
-	fmt.Println(conf.TreeCollapseColor, conf.TreeExpandColor, conf.EnabledExtensions, conf.TreeBranchColor, conf.WarningColor,
-		conf.FoldersColor, conf.FilesColor, conf.SortingIgnoreCase, conf.FileStatsColor)
+	//fmt.Println(conf.TreeCollapseColor, conf.TreeExpandColor, conf.EnabledExtensions, conf.TreeBranchColor, conf.WarningColor,
+	//	conf.FoldersColor, conf.FilesColor, conf.SortingIgnoreCase, conf.FileStatsColor)
 
 	for _, role := range conf.EnabledExtensions {
 		fmt.Println(role)
