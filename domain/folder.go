@@ -1,5 +1,7 @@
 package folder
 
+import "os"
+
 type FolderInfo struct {
 	Parent     *FolderInfo
 	SubFolders []FolderInfo
@@ -10,6 +12,14 @@ type FolderInfo struct {
 }
 
 type FileInfo struct {
+	FileName   string
+	FileSize   int64
+	FileExt    string
+	CantAccess bool
+}
+
+func (f FileInfo) GetFileExtension() string {
+	return ""
 }
 
 func New(absolutePath string) *FolderInfo {
@@ -31,5 +41,40 @@ func new(folderName string, parent *FolderInfo) *FolderInfo {
 		IsScanned:  false,
 		CantAccess: false,
 		FolderName: folderName,
+	}
+}
+
+func (f FolderInfo) Scan() error {
+	FileSystemObjects, err := os.ReadDir(f.GetAbsolutePath())
+	if err != nil {
+		f.CantAccess = true
+		return err
+	}
+	for _, fso := range FileSystemObjects {
+		if fso.IsDir() {
+			tempFolder := FolderInfo{FolderName: fso.Name()}
+			f.SubFolders = append(f.SubFolders, tempFolder)
+			//Adding directory
+		} else {
+			//adding file
+			tempFile := FileInfo{FileName: fso.Name()}
+			fileInformation, err := fso.Info()
+			if err != nil {
+				tempFile.CantAccess = true
+
+			} else {
+				tempFile.FileSize = fileInformation.Size()
+			}
+			f.Files = append(f.Files, tempFile)
+		}
+	}
+
+}
+
+func (f FolderInfo) GetAbsolutePath() string {
+	if f.Parent == nil {
+		return f.FolderName
+	} else {
+		return f.Parent.FolderName + "\\" + f.FolderName
 	}
 }
